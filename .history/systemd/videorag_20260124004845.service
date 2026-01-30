@@ -1,0 +1,16 @@
+[Unit]
+Description=Video-RAG API (uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=codenza
+WorkingDirectory=/home/codenza/Finalproject/backend
+Environment=PYTHONPATH=/home/codenza/Finalproject
+Environment=PATH=/home/codenza/.local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3.11 -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

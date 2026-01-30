@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+.pytest_cache
+node_modules
+.venv
+env
+.env
+.DS_Store
+.cache
+build
+dist
+.mypy_cache
+video-rag-app/dist
+frontend/node_modules

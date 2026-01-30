@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./video-rag-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8001:8000"
+    env_file:
+      - backend/.env
+    environment:
+      - DATABASE_URL=sqlite:///./backend.db
+    secrets:
+      - OPENAI_API_KEY
+      - GOOGLE_API_KEY
+      - API_KEY
+    depends_on:
+      - frontend
+    restart: unless-stopped
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+secrets:
+  OPENAI_API_KEY:
+    external: true
+  GOOGLE_API_KEY:
+    external: true
+  API_KEY:
+    external: true

@@ -1,0 +1,77 @@
+name: CI + Publish
+
+on:
+  push:
+    branches: [ main ]
+    tags: ['v*']
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: ./video-rag-app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install backend deps
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          PYTHONPATH=. python -m pytest -q
+
+  publish-images:
+    needs: build-test
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./video-rag-app
+          file: ./video-rag-app/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/finalproject-frontend:latest,ghcr.io/${{ github.repository_owner }}/finalproject-frontend:${{ github.ref_name }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./backend/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/finalproject-backend:latest,ghcr.io/${{ github.repository_owner }}/finalproject-backend:${{ github.ref_name }}

@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "Video-RAG API - Postman Collection",
+    "_postman_id": "b2f6b3d6-collection",
+    "description": "Basic Postman collection for the local Video-RAG API (uses {{baseUrl}}).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Videos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/videos", "host": ["{{baseUrl}}"], "path": ["api","videos"] }
+      }
+    },
+    {
+      "name": "Process video from URL",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4\",\n  \"title\": \"Sample Bunny\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/videos/process-url", "host": ["{{baseUrl}}"], "path": ["api","videos","process-url"] }
+      }
+    },
+    {
+      "name": "Upload video (form-data)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "/path/to/video.mp4" },
+            { "key": "title", "type": "text", "value": "Local Test" }
+          ]
+        },
+        "url": { "raw": "{{baseUrl}}/api/videos/upload", "host": ["{{baseUrl}}"], "path": ["api","videos","upload"] }
+      }
+    },
+    {
+      "name": "Get video status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/videos/:videoId/status", "host": ["{{baseUrl}}"], "path": ["api","videos",":videoId","status"] }
+      }
+    },
+    {
+      "name": "Get transcript",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/videos/:videoId/transcript", "host": ["{{baseUrl}}"], "path": ["api","videos",":videoId","transcript"] }
+      }
+    },
+    {
+      "name": "Generate quiz",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"videoId\": \"<VIDEO_ID>\",\n  \"questionCount\": 5\n}" },
+        "url": { "raw": "{{baseUrl}}/api/quiz/generate", "host": ["{{baseUrl}}"], "path": ["api","quiz","generate"] }
+      }
+    },
+    {
+      "name": "Submit quiz answers",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"answers\": { \"q1\": \"a\" }\n}" },
+        "url": { "raw": "{{baseUrl}}/api/quiz/:quizId/submit", "host": ["{{baseUrl}}"], "path": ["api","quiz",":quizId","submit"] }
+      }
+    },
+    {
+      "name": "Chat with video",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"videoId\": \"<VIDEO_ID>\",\n  \"message\": \"Summarize the key points\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/chat", "host": ["{{baseUrl}}"], "path": ["api","chat"] }
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" }
+  ]
+}
